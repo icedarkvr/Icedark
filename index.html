@@ -298,6 +298,20 @@ function startRec(){
   recognizer.lang = fromSW ? "zh-CN" : "zh-HK";
   recognizer.interimResults = false;
   recognizer.maxAlternatives = 3;
+   // 加入汕尾話/潮汕話常用詞庫優化識別
+  try {
+    const phraseData = [
+      { phrase: "食飯", boost: 5.0 },
+      { phrase: "落班", boost: 5.0 },
+      { phrase: "系無", boost: 5.0 },
+      { phrase: "汕尾", boost: 5.0 },
+      { phrase: "潮汕", boost: 5.0 }
+    ];
+    const phraseObjects = phraseData.map(p => new SpeechRecognitionPhrase(p.phrase, p.boost));
+    recognizer.phrases = phraseObjects;
+  } catch(e) {
+    console.log("瀏覽器不支援自定義詞庫", e);
+  }
   recognizer.onstart = ()=>{ listening=true; $("micBtn").classList.add("listening"); $("micBtn").innerHTML="🛑 聽緊…點擊停"; };
   recognizer.onerror = e=>{ toast("語音錯誤："+e.error); stopRec(); };
   recognizer.onend = ()=>{ stopRec(); };
